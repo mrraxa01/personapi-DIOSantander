@@ -9,6 +9,7 @@ import one.digitalinnovation.personaapi.mapper.PersonMapper;
 import one.digitalinnovation.personaapi.repository.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
@@ -42,9 +43,19 @@ public class PersonService {
     }
 
     public PersonDTO findById(Long id) throws PersonNotFoundException {
+        Person person = verifyIfExists(id);
+        return personMapper.toDTO(person);
+    }
 
-      Person person = personRepository.findById(id)
-              .orElseThrow(() -> new PersonNotFoundException(id) );
-      return personMapper.toDTO(person);
+
+    public void deleteById(Long id) throws PersonNotFoundException {
+        verifyIfExists(id);
+        personRepository.deleteById(id);
+
+    }
+
+    private Person verifyIfExists(Long id) throws PersonNotFoundException {
+        return personRepository.findById(id)
+                .orElseThrow(()-> new PersonNotFoundException(id));
     }
 }
